@@ -20,11 +20,9 @@ type MemcacheClient struct {
 // Create a new Client.
 // Config must have the servers array.
 // Optional the defaultExpiration.
-func (c *MemcacheClient) connectClient(servers []string, defaultExpiration ...int32) error {
+func (c *MemcacheClient) connectClient(servers []string, defaultExpiration ...int32) (err error) {
 
-	var err error
 	selector := new(memcache.ServerList)
-
 	err = selector.SetServers(servers...)
 
 	if err == nil {
@@ -34,7 +32,6 @@ func (c *MemcacheClient) connectClient(servers []string, defaultExpiration ...in
 
 		if defaultExpiration != nil {
 			c.defaultExpiration = defaultExpiration[0]
-
 		} else {
 			c.defaultExpiration = 60 * 15 // Default expiration time: 15 minutes.
 		}
@@ -45,38 +42,31 @@ func (c *MemcacheClient) connectClient(servers []string, defaultExpiration ...in
 		}
 	}
 
-	return err
+	return
 }
 
 func (c *MemcacheClient) SetDefaultExpiration(secs int32) {
 	c.defaultExpiration = secs
 }
 
-func (c *MemcacheClient) Get(key string, value interface{}) error {
-
+func (c *MemcacheClient) Get(key string, value interface{}) (err error) {
 	item, err := c.client.Get(key)
-
 	if err == nil {
 		err = decode(item.Value, value)
 	}
-
 	return err
 }
 
-func (c *MemcacheClient) Set(key string, value interface{}, expiration ...int32) error {
+func (c *MemcacheClient) Set(key string, value interface{}, expiration ...int32) (err error) {
 	valueEncoded, err := encode(value)
-
 	if err == nil {
-
 		if expiration != nil {
 			err = c.client.Set(&memcache.Item{Key: key, Value: valueEncoded, Expiration: expiration[0]})
-
 		} else {
 			err = c.client.Set(&memcache.Item{Key: key, Value: valueEncoded, Expiration: c.defaultExpiration})
 		}
 	}
-
-	return err
+	return
 }
 
 func (c *MemcacheClient) Delete(key string) error {
@@ -85,16 +75,16 @@ func (c *MemcacheClient) Delete(key string) error {
 
 // Auxiliary functions
 
-func encode(value interface{}) ([]byte, error) {
+func encode(value interface{}) (encodedValue []byte, err error) {
 	buf := new(bytes.Buffer)
 	enc := gob.NewEncoder(buf)
 
-	err := enc.Encode(value)
-	if err != nil {
-		return nil, err
+	err = enc.Encode(value)
+	if err == nil {
+		encodedValue = buf.Bytes()
 	}
 
-	return buf.Bytes(), nil
+	return
 }
 
 func decode(value []byte, result interface{}) error {
