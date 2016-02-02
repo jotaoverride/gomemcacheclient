@@ -5,7 +5,6 @@ package gomemcacheclient
  */
 
 import (
-	"fmt"
 	"os"
 )
 
