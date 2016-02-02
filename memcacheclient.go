@@ -20,7 +20,7 @@ type MemcacheClient struct {
 // Create a new Client.
 // Config must have the servers array.
 // Optional the defaultExpiration.
-func (c *MemcacheClient) connectClient(servers []string, defaultExpiration ...int32) (err error) {
+func (c *MemcacheClient) ConnectClient(servers []string, defaultExpiration ...int32) (err error) {
 
 	selector := new(memcache.ServerList)
 	err = selector.SetServers(servers...)

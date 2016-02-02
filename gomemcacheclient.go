@@ -23,11 +23,11 @@ func NewClient(servers []string, defaultExpiration ...int32) (Client, error) {
 
 	if os.Getenv("GO_ENVIRONMENT") == "production" {
 		RealInstance := new(MemcacheClient)
-		err = RealInstance.connectClient(servers, defaultExpiration...)
+		err = RealInstance.ConnectClient(servers, defaultExpiration...)
 		instance = RealInstance
 	} else {
 		fmt.Println("This is no preduction, this is", os.Getenv("GO_ENVIRONMENT"))
-		mockInstance := NewMemcachedClientMock(defaultExpiration...)
+		mockInstance := NewClientMock(defaultExpiration...)
 		instance = mockInstance
 	}
 

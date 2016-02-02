@@ -15,7 +15,7 @@ type MemcacheClientMock struct {
 	defaultExpiration int32
 }
 
-func NewMemcachedClientMock(expiration ...int32) *MemcacheClientMock {
+func NewClientMock(expiration ...int32) *MemcacheClientMock {
 	client := new(MemcacheClientMock)
 	client.memcache = cmap.New()
 
