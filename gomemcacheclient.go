@@ -5,8 +5,8 @@ package gomemcacheclient
  */
 
 import (
-	"os"
 	"fmt"
+	"os"
 )
 
 type Client interface {
@@ -26,7 +26,6 @@ func NewClient(servers []string, defaultExpiration ...int32) (Client, error) {
 		err = RealInstance.ConnectClient(servers, defaultExpiration...)
 		instance = RealInstance
 	} else {
-		fmt.Println("This is no preduction, this is", os.Getenv("GO_ENVIRONMENT"))
 		mockInstance := NewClientMock(defaultExpiration...)
 		instance = mockInstance
 	}

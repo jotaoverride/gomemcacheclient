@@ -7,6 +7,7 @@ package gomemcacheclient
 import (
 	"errors"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 	"time"
 )
@@ -61,7 +62,7 @@ func TestSetTwiceAndHit(t *testing.T) {
 	assert.Equal(t, foo, empty)
 }
 
-func TestGetDeleteAndMiss(t *testing.T)  {
+func TestGetDeleteAndMiss(t *testing.T) {
 	foo := map[string]interface{}{"key": "value"}
 
 	err := client.Set("foo", foo, 1)
@@ -78,7 +79,7 @@ func TestGetDeleteAndMiss(t *testing.T)  {
 	assert.Equal(t, map[string]interface{}{}, empty)
 }
 
-func TestGetExpiredItem(t *testing.T)  {
+func TestGetExpiredItem(t *testing.T) {
 	client.SetDefaultExpiration(1)
 
 	foo := map[string]interface{}{"key": "value"}
@@ -113,4 +114,11 @@ func TestNewClientWithExpiration(t *testing.T) {
 	err = otherClient.Get("foo", &empty)
 	assert.Equal(t, errors.New("memcache: cache miss"), err)
 	assert.Equal(t, map[string]interface{}{}, empty)
+}
+
+func TestNewClientWithInvalidAddres(t *testing.T) {
+	if os.Getenv("GO_ENVIRONMENT") == "production" {
+		_, err := NewClient([]string{"192.168.6.6:666"}, 1)
+		assert.Equal(t, "Can't connect to the servers", err.Error())
+	}
 }
